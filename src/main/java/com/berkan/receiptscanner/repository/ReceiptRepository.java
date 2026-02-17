@@ -26,10 +26,10 @@ public interface ReceiptRepository extends JpaRepository<Receipt, Long> {
             String merchantName, 
             Pageable pageable);
     
-    //Count total receipts for a user
+    // Count total receipts for a user
     long countByUser(User user);
     
-    //Get total spending for a user 
+    // Get total spending for a user 
     @Query("SELECT COALESCE(SUM(r.totalAmount), 0) FROM Receipt r WHERE r.user = :user")
     Double getTotalSpendingByUser(@Param("user") User user);
 
