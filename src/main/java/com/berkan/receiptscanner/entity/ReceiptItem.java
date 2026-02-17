@@ -26,22 +26,13 @@ public class ReceiptItem {
     @JoinColumn(name = "receipt_id", nullable = false)
     private Receipt receipt;
 
-    public ReceiptItem() {
-    }
+    public ReceiptItem() {}
 
     public ReceiptItem(String name, Integer quantity, BigDecimal unitPrice, BigDecimal totalPrice) {
         this.name = name;
         this.quantity = quantity;
         this.unitPrice = unitPrice;
         this.totalPrice = totalPrice;
-    }
-
-    public ReceiptItem(String name, Integer quantity, BigDecimal unitPrice, Receipt receipt) {
-        this.name = name;
-        this.quantity = quantity;
-        this.unitPrice = unitPrice;
-        this.receipt = receipt;
-        calculateTotal();
     }
 
     @PrePersist
