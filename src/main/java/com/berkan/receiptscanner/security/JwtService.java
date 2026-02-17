@@ -47,6 +47,15 @@ public class JwtService {
     }
 
     /**
+     * Get access token expiration time in seconds.
+     * 
+     * @return expiration time in seconds
+     */
+    public long getAccessTokenExpirationInSeconds() {
+        return accessTokenExpirationMs / 1000;
+    }
+
+    /**
      * Generate JWT access token for authenticated user.
      * Includes all user roles in the token claims as a JSON array.
      * 
