@@ -88,55 +88,31 @@ public class JwtService {
     }
 
     /**
-     * Validate JWT token against user details.
-     * Checks:
-     * - Username matches
-     * - Token not expired
-     * - User account is enabled
-     * - Token signature is valid (handled by parseSignedClaims)
+     * Validate JWT token and extract claims in a single parse operation.
+     * This method is optimized to parse the token only once.
      * 
      * @param token JWT token
      * @param userDetails user details to validate against
-     * @return true if token is valid
+     * @return Claims if token is valid, null otherwise
      */
-    public boolean isTokenValid(String token, UserDetails userDetails) {
+    public Claims validateAndExtractClaims(String token, UserDetails userDetails) {
         try {
-            String username = extractUsername(token);
+            Claims claims = extractAllClaims(token);
+            String username = claims.getSubject();
+            Date expiration = claims.getExpiration();
             
-            return username.equals(userDetails.getUsername()) 
-                && !isTokenExpired(token)
+            boolean isValid = username.equals(userDetails.getUsername())
+                && expiration.after(new Date())
                 && userDetails.isEnabled()
                 && userDetails.isAccountNonLocked()
                 && userDetails.isAccountNonExpired()
                 && userDetails.isCredentialsNonExpired();
             
-        } catch (InvalidTokenException e) {
-            return false;
-        }
-    }
-
-    /**
-     * Check if token is expired.
-     * 
-     * @param token JWT token
-     * @return true if expired
-     */
-    private boolean isTokenExpired(String token) {
-        try {
-            return extractExpiration(token).before(new Date());
+            return isValid ? claims : null;
+            
         } catch (Exception e) {
-            return true;
+            return null;
         }
-    }
-
-    /**
-     * Extract expiration date from token.
-     * 
-     * @param token JWT token
-     * @return expiration date
-     */
-    private Date extractExpiration(String token) {
-        return extractClaim(token, Claims::getExpiration);
     }
 
     /**
