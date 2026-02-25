@@ -8,8 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.time.LocalDate;
-import java.util.List;
+import java.time.Instant;
 
 public interface ReceiptRepository extends JpaRepository<Receipt, Long> {
 
@@ -17,8 +16,8 @@ public interface ReceiptRepository extends JpaRepository<Receipt, Long> {
 
     Page<Receipt> findByUserAndTransactionDateBetween(
             User user, 
-            LocalDate startDate, 
-            LocalDate endDate, 
+            Instant startDate, 
+            Instant endDate, 
             Pageable pageable);
 
     Page<Receipt> findByUserAndMerchantNameContainingIgnoreCase(
@@ -26,13 +25,8 @@ public interface ReceiptRepository extends JpaRepository<Receipt, Long> {
             String merchantName, 
             Pageable pageable);
     
-    // Count total receipts for a user
     long countByUser(User user);
     
-    // Get total spending for a user 
     @Query("SELECT COALESCE(SUM(r.totalAmount), 0) FROM Receipt r WHERE r.user = :user")
     Double getTotalSpendingByUser(@Param("user") User user);
-
-    // Get receipts by user ordered by transaction date descending
-    List<Receipt> findTop10ByUserOrderByTransactionDateDesc(User user);
 }
