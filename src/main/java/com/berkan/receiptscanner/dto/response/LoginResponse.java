@@ -4,10 +4,11 @@ public record LoginResponse(
         String accessToken,
         String refreshToken,
         String tokenType,
-        long expiresIn,
-        long refreshExpiresIn
+        long accessTokenExpiresInMinutes,
+        long refreshTokenExpiresInMinutes
 ) {
-    public LoginResponse(String accessToken, String refreshToken, long expiresIn, long refreshExpiresIn) {
-        this(accessToken, refreshToken, "Bearer", expiresIn, refreshExpiresIn);
+    public LoginResponse(String accessToken, String refreshToken, long accessTokenExpiresInMinutes,
+            long refreshTokenExpiresInMinutes) {
+        this(accessToken, refreshToken, "Bearer", accessTokenExpiresInMinutes, refreshTokenExpiresInMinutes);
     }
 }
