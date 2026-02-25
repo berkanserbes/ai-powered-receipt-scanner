@@ -31,8 +31,8 @@ public class JwtService {
     @Value("${jwt.secret}")
     private String secretKey;
 
-    @Value("${jwt.access-token-expiration-ms}")
-    private long accessTokenExpirationMs;
+    @Value("${jwt.access-token-expiration-minutes}")
+    private long accessTokenExpirationMinutes;
 
     private SecretKey signingKey;
 
@@ -47,12 +47,12 @@ public class JwtService {
     }
 
     /**
-     * Get access token expiration time in seconds.
+     * Get access token expiration time in minutes.
      * 
-     * @return expiration time in seconds
+     * @return expiration time in minutes
      */
-    public long getAccessTokenExpirationInSeconds() {
-        return accessTokenExpirationMs / 1000;
+    public long getAccessTokenExpirationInMinutes() {
+        return accessTokenExpirationMinutes;
     }
 
     /**
@@ -78,7 +78,7 @@ public class JwtService {
         
         extraClaims.put("roles", roles);
         
-        return buildToken(extraClaims, userDetails, accessTokenExpirationMs);
+        return buildToken(extraClaims, userDetails, accessTokenExpirationMinutes * 60_000L);
     }
 
     /**
@@ -184,7 +184,7 @@ public class JwtService {
         } catch (IllegalArgumentException e) {
             throw new InvalidTokenException("Token cannot be null or empty", e);
             
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             throw new InvalidTokenException("Failed to parse token", e);
         }
     }
