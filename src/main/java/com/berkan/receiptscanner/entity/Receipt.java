@@ -3,8 +3,7 @@ package com.berkan.receiptscanner.entity;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -28,7 +27,7 @@ public class Receipt {
     private String merchantName;
 
     @Column(name = "transaction_date")
-    private LocalDate transactionDate;
+    private Instant transactionDate;
 
     @Column(name = "total_amount", precision = 10, scale = 2)
     private BigDecimal totalAmount;
@@ -40,7 +39,7 @@ public class Receipt {
     private String imageUrl;
 
     @OneToMany(mappedBy = "receipt", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ReceiptItem> items = new ArrayList<>();
+    private final List<ReceiptItem> items = new ArrayList<>();
 
     public void addItem(ReceiptItem item) {
         items.add(item);
@@ -57,15 +56,15 @@ public class Receipt {
     }
 
     @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 
     @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    private Instant updatedAt;
 
     public Receipt() {
     }
 
-    public Receipt(User user, String merchantName, LocalDate transactionDate,
+    public Receipt(User user, String merchantName, Instant transactionDate,
             BigDecimal totalAmount, String currency, String imageUrl) {
         this.user = user;
         this.merchantName = merchantName;
@@ -77,12 +76,12 @@ public class Receipt {
 
     @PrePersist
     protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = Instant.now();
     }
 
     @PreUpdate
     protected void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
+        this.updatedAt = Instant.now();
     }
 
     public Long getId() {
@@ -109,11 +108,11 @@ public class Receipt {
         this.merchantName = merchantName;
     }
 
-    public LocalDate getTransactionDate() {
+    public Instant getTransactionDate() {
         return transactionDate;
     }
 
-    public void setTransactionDate(LocalDate transactionDate) {
+    public void setTransactionDate(Instant transactionDate) {
         this.transactionDate = transactionDate;
     }
 
@@ -141,19 +140,19 @@ public class Receipt {
         this.imageUrl = imageUrl;
     }
 
-    public LocalDateTime getCreatedAt() {
+    public Instant getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
     }
 
-    public LocalDateTime getUpdatedAt() {
+    public Instant getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(LocalDateTime updatedAt) {
+    public void setUpdatedAt(Instant updatedAt) {
         this.updatedAt = updatedAt;
     }
 }
