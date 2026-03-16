@@ -1,0 +1,72 @@
+{
+  "properties": [
+    {
+      "name": "api.version",
+      "type": "java.lang.String",
+      "description": "API version string (e.g. v1, v2). Sourced from API_VERSION env variable.",
+      "defaultValue": "v1"
+    },
+    {
+      "name": "api.base-path",
+      "type": "java.lang.String",
+      "description": "Full API base path prefix used in all controllers (e.g. /api/v1).",
+      "defaultValue": "/api/v1"
+    },
+    {
+      "name": "admin.username",
+      "type": "java.lang.String",
+      "description": "Username for the default admin account created on first startup.",
+      "defaultValue": "admin"
+    },
+    {
+      "name": "admin.password",
+      "type": "java.lang.String",
+      "description": "Password for the default admin account created on first startup.",
+      "defaultValue": "admin123"
+    },
+    {
+      "name": "jwt.secret",
+      "type": "java.lang.String",
+      "description": "Secret key for signing JWT tokens."
+    },
+    {
+      "name": "jwt.access-token-expiration-minutes",
+      "type": "java.lang.Long",
+      "description": "Access token expiration time in minutes.",
+      "defaultValue": 15
+    },
+    {
+      "name": "jwt.refresh-token-expiration-minutes",
+      "type": "java.lang.Long",
+      "description": "Refresh token expiration time in minutes.",
+      "defaultValue": 10080
+    },
+    {
+      "name": "file.upload-dir",
+      "type": "java.lang.String",
+      "description": "Local directory path for uploaded receipt images.",
+      "defaultValue": "uploads"
+    },
+    {
+      "name": "cloudinary.cloud-name",
+      "type": "java.lang.String",
+      "description": "Cloudinary cloud name. Leave empty to use local storage."
+    },
+    {
+      "name": "cloudinary.api-key",
+      "type": "java.lang.String",
+      "description": "Cloudinary API key."
+    },
+    {
+      "name": "cloudinary.api-secret",
+      "type": "java.lang.String",
+      "description": "Cloudinary API secret."
+    },
+    {
+      "name": "cloudinary.folder",
+      "type": "java.lang.String",
+      "description": "Cloudinary folder name for uploaded receipts.",
+      "defaultValue": "receipts"
+    }
+  ]
+}
