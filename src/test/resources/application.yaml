@@ -1,0 +1,33 @@
+spring:
+  datasource:
+    url: ${TEST_DB_URL:jdbc:h2:mem:receiptscanner-test;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1}
+    driver-class-name: ${TEST_DB_DRIVER_CLASS_NAME:org.h2.Driver}
+    username: ${TEST_DB_USERNAME:sa}
+    password: ${TEST_DB_PASSWORD:}
+  jpa:
+    hibernate:
+      ddl-auto: ${TEST_JPA_DDL_AUTO:create-drop}
+    show-sql: ${TEST_JPA_SHOW_SQL:false}
+    properties:
+      hibernate:
+        dialect: ${TEST_HIBERNATE_DIALECT:org.hibernate.dialect.H2Dialect}
+
+api:
+  version: v1
+  base-path: /api/v1
+
+ai:
+  provider: openai
+
+jwt:
+  secret: ${JWT_SECRET:dGhpc2lzYXZlcnlsb25nc2VjcmV0a2V5Zm9ydGVzdGluZ3B1cnBvc2Vz}
+  access-token-expiration-minutes: ${JWT_ACCESS_TOKEN_EXPIRATION_MINUTES:15}
+  refresh-token-expiration-minutes: ${JWT_REFRESH_TOKEN_EXPIRATION_MINUTES:10080}
+
+openai:
+  api-key: ${OPENAI_API_KEY:test-api-key}
+  model: ${OPENAI_MODEL:gpt-4o}
+  api-url: ${OPENAI_API_URL:https://api.openai.com/v1/chat/completions}
+
+file:
+  upload-dir: ${TEST_FILE_UPLOAD_DIR:${java.io.tmpdir}/receipt-scanner-test-uploads}
