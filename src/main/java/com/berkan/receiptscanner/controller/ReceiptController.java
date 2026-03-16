@@ -1,6 +1,7 @@
 package com.berkan.receiptscanner.controller;
 
 import com.berkan.receiptscanner.dto.response.ApiResponse;
+import com.berkan.receiptscanner.dto.response.PagedResponse;
 import com.berkan.receiptscanner.dto.response.ReceiptFileResponse;
 import com.berkan.receiptscanner.dto.response.ReceiptResponse;
 import com.berkan.receiptscanner.entity.User;
@@ -11,7 +12,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -50,12 +50,14 @@ public class ReceiptController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<Page<ReceiptResponse>>> getAllReceipts(
-            @RequestParam(defaultValue = "0") int page,
+    public ResponseEntity<ApiResponse<PagedResponse<ReceiptResponse>>> getAllReceipts(
+            @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @AuthenticationPrincipal User currentUser) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        Page<ReceiptResponse> receipts = receiptService.getAllReceipts(pageable, currentUser);
+        int safePage = Math.max(1, page);
+        int safeSize = Math.min(100, Math.max(1, size));
+        Pageable pageable = PageRequest.of(safePage - 1, safeSize, Sort.by("createdAt").descending());
+        PagedResponse<ReceiptResponse> receipts = PagedResponse.of(receiptService.getAllReceipts(pageable, currentUser));
         return ResponseEntity.ok(ApiResponse.success(receipts, "Receipts retrieved successfully"));
     }
 
