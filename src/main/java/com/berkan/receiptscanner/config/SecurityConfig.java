@@ -84,7 +84,7 @@ public class SecurityConfig {
                         .requestMatchers(apiBasePath + "/auth/**").permitAll()
                         .anyRequest().authenticated())
                 .authenticationProvider(authenticationProvider())
-                    .addFilterBefore(requestRateLimitFilter, JwtAuthenticationFilter.class)
+                    .addFilterBefore(requestRateLimitFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
