@@ -1,6 +1,7 @@
 package com.berkan.receiptscanner.config;
 
 import com.berkan.receiptscanner.filter.JwtAuthenticationFilter;
+import com.berkan.receiptscanner.filter.RequestRateLimitFilter;
 import tools.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,13 +32,16 @@ public class SecurityConfig {
     private String apiBasePath;
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final RequestRateLimitFilter requestRateLimitFilter;
     private final UserDetailsService userDetailsService;
     private final ObjectMapper objectMapper;
 
     public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter,
+            RequestRateLimitFilter requestRateLimitFilter,
             UserDetailsService userDetailsService,
             ObjectMapper objectMapper) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.requestRateLimitFilter = requestRateLimitFilter;
         this.userDetailsService = userDetailsService;
         this.objectMapper = objectMapper;
     }
@@ -45,7 +49,9 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable())
+            .csrf(csrf -> csrf.disable())
+            .cors(cors -> {
+            })
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(ex -> ex
                     .authenticationEntryPoint((request, response, authException) -> {
@@ -78,6 +84,7 @@ public class SecurityConfig {
                         .requestMatchers(apiBasePath + "/auth/**").permitAll()
                         .anyRequest().authenticated())
                 .authenticationProvider(authenticationProvider())
+                    .addFilterBefore(requestRateLimitFilter, JwtAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
