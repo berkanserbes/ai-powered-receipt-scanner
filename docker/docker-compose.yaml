@@ -1,0 +1,115 @@
+services:
+  # ───────────────────────────────────────────────────────────────────────────
+  # PostgreSQL Database
+  # ───────────────────────────────────────────────────────────────────────────
+  postgres:
+    image: postgres:17
+    container_name: receipt-scanner-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-receipt_scanner_db}
+      POSTGRES_USER: ${DB_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-postgres} -d ${DB_NAME:-receipt_scanner_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - receipt-scanner-net
+
+  # ───────────────────────────────────────────────────────────────────────────
+  # Receipt Scanner Application
+  # ───────────────────────────────────────────────────────────────────────────
+  app:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: receipt-scanner-app
+    restart: unless-stopped
+    ports:
+      - "${SERVER_PORT:-8080}:8080"
+    environment:
+      # Database
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-receipt_scanner_db}
+      DB_USERNAME: ${DB_USERNAME:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      # JWT
+      JWT_SECRET: ${JWT_SECRET:-YourSuperSecretKeyForJWTTokenGenerationMustBeAtLeast256BitsLong123456}
+      JWT_ACCESS_TOKEN_EXPIRATION_MINUTES: ${JWT_ACCESS_TOKEN_EXPIRATION_MINUTES:-15}
+      JWT_REFRESH_TOKEN_EXPIRATION_MINUTES: ${JWT_REFRESH_TOKEN_EXPIRATION_MINUTES:-10080}
+      # AI Provider
+      AI_PROVIDER: ${AI_PROVIDER:-gemini}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-2.5-flash-lite}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-4o}
+      # Admin
+      ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin123}
+      # File storage
+      FILE_UPLOAD_DIR: /app/uploads
+    volumes:
+      - uploads_data:/app/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - receipt-scanner-net
+
+  # ───────────────────────────────────────────────────────────────────────────
+  # SonarQube (Code Quality)
+  # ───────────────────────────────────────────────────────────────────────────
+  sonarqube:
+    image: sonarqube:community
+    container_name: receipt-scanner-sonarqube
+    restart: unless-stopped
+    ports:
+      - "9000:9000"
+    environment:
+      SONAR_JDBC_URL: jdbc:postgresql://postgres:5432/${DB_NAME:-receipt_scanner_db}
+      SONAR_JDBC_USERNAME: ${DB_USERNAME:-postgres}
+      SONAR_JDBC_PASSWORD: ${DB_PASSWORD:-postgres}
+    volumes:
+      - sonarqube_data:/opt/sonarqube/data
+      - sonarqube_extensions:/opt/sonarqube/extensions
+      - sonarqube_logs:/opt/sonarqube/logs
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - receipt-scanner-net
+
+  # ───────────────────────────────────────────────────────────────────────────
+  # Portainer (Docker Management UI)
+  # ───────────────────────────────────────────────────────────────────────────
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: receipt-scanner-portainer
+    restart: unless-stopped
+    ports:
+      - "9443:9443"
+      - "9001:9001"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    networks:
+      - receipt-scanner-net
+
+volumes:
+  postgres_data:
+  uploads_data:
+  sonarqube_data:
+  sonarqube_extensions:
+  sonarqube_logs:
+  portainer_data:
+
+networks:
+  receipt-scanner-net:
+    driver: bridge

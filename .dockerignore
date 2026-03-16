@@ -1,0 +1,30 @@
+# ─── Build output ────────────────────────────────────────────────────────────
+target/
+
+# ─── Version control ─────────────────────────────────────────────────────────
+.git/
+.github/
+.gitignore
+
+# ─── IDE ─────────────────────────────────────────────────────────────────────
+.idea/
+*.iml
+.vscode/
+
+# ─── Runtime data (generated at runtime, not baked into image) ───────────────
+logs/
+uploads/
+
+# ─── Documentation ───────────────────────────────────────────────────────────
+*.md
+
+# ─── Environment / secrets (never bake into image) ───────────────────────────
+.env
+.env.*
+
+# ─── Windows Maven wrapper (image is Linux) ──────────────────────────────────
+mvnw.cmd
+
+# ─── Docker files (avoid recursive COPY in build context) ────────────────────
+docker/
+compose.yaml
