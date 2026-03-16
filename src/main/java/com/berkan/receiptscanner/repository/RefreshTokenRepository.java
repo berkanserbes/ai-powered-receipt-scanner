@@ -34,6 +34,10 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long
     @Query("DELETE FROM RefreshToken rt WHERE rt.revoked = true")
     void deleteRevokedTokens();
 
+    @Modifying
+    @Query("UPDATE RefreshToken rt SET rt.revoked = true WHERE rt.user = :user")
+    void revokeAllByUser(@Param("user") User user);
+
     @Query("SELECT COUNT(rt) FROM RefreshToken rt WHERE rt.user = :user AND rt.revoked = false AND rt.expiryDate > :now")
     long countActiveTokensByUser(@Param("user") User user, @Param("now") Instant now);
 }
